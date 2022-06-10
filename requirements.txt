@@ -1,0 +1,12 @@
+autobahn[asyncio,encryption,serialization]
+
+# database
+sqlalchemy
+aiosqlite
+sqlalchemy-utils
+
+# validation
+marshmallow
+marshmallow-sqlalchemy
+
+uvloop
