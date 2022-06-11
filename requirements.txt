@@ -4,6 +4,7 @@ autobahn[asyncio,encryption,serialization]
 sqlalchemy
 aiosqlite
 sqlalchemy-utils
+asyncpg
 
 # validation
 marshmallow

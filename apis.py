@@ -5,14 +5,14 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.future import select
 
-from serializers import UserSchema
-from models import Base, User
+from serializers import UserSchema, SnapSchema
+from models import Base, User, Snap
 
 
 class UserManager:
     def __init__(self):
         self.engine = create_async_engine(
-            'sqlite+aiosqlite:///user.db',
+            'postgresql+asyncpg://app_user:new_pass@localhost:5432/app_store_api',
             echo=False,
         )
         self.async_session = sessionmaker(
@@ -33,7 +33,7 @@ class UserManager:
         return user_schema.dump(user)
 
     @wamp.register('com.thing.user.get', check_types=True)
-    async def get(self, email: str):
+    async def get_user(self, email: str):
 
         query = select(User).where(User.email == email)
 
@@ -46,4 +46,20 @@ class UserManager:
                 if result is None:
                     raise ApplicationError("com.thing.attribute_error", 'email not exists')
                 response = user_schema.dump(result)
+                return response
+
+    @wamp.register('com.thing.snap.get', check_types=True)
+    async def get_snap(self, name: str):
+
+        query = select(Snap).where(Snap.name == name)
+
+        async with self.async_session() as session:
+            async with session.begin():
+                snap_schema = SnapSchema()
+                snap = await session.execute(query)
+
+                result = snap.scalars().first()
+                if result is None:
+                    raise ApplicationError("com.thing.attribute_error", f"snap {name} not exists")
+                response = snap_schema.dump(result)
                 return response
