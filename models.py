@@ -38,7 +38,7 @@ class User(Base):
     date_joined = Column(DateTime)
     password_reset_email_otp = Column(Integer)
     account_activation_sms_otp = Column(Integer)
-    snaps = relationship("Snap", back_populates="publisher")
+    snaps = relationship("Snap")
 
 
 class Snap(Base):
@@ -51,7 +51,7 @@ class Snap(Base):
     series = Column(String(255), default="16")
     uid = Column(String(255), default=generate_user_id, unique=True)
     publisher_id = Column(Integer, ForeignKey('store_user.id'))
-    publisher = relationship("User", back_populates="snaps")
+    # publisher = relationship("User", back_populates="snaps")
     name = Column(String(255), unique=True)
     timestamp = Column(DateTime)
     type = Column(ChoiceType(SnapType, impl=String(255)), default=SnapType.system)

@@ -63,3 +63,19 @@ class UserManager:
                     raise ApplicationError("com.thing.attribute_error", f"snap {name} not exists")
                 response = snap_schema.dump(result)
                 return response
+
+    @wamp.register('com.thing.snap.get.all', check_types=True)
+    async def get_all_snaps(self):
+
+        query = select(Snap)
+
+        async with self.async_session() as session:
+            async with session.begin():
+                snaps = []
+                snap_schema = SnapSchema()
+                snap = await session.execute(query)
+                for a in snap.scalars():
+                    snaps.append(snap_schema.dump(a))
+                if snaps is None:
+                    raise ApplicationError("com.thing.attribute_error", f" no snap available")
+                return snaps
